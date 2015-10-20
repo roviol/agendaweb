@@ -2,13 +2,13 @@ from django.db import models
 import myFields
 
 DAYS_OF_WEEK = (
-    (0, 'Domingo'),
-    (1, 'Lunes'),
-    (2, 'Martes'),
-    (3, 'Miercoles'),
-    (4, 'Jueves'),
-    (5, 'Viernes'),
-    (6, 'Sabado'),
+    ('0', 'Domingo'),
+    ('1', 'Lunes'),
+    ('2', 'Martes'),
+    ('3', 'Miercoles'),
+    ('4', 'Jueves'),
+    ('5', 'Viernes'),
+    ('6', 'Sabado'),
 )
 
 class Pais(models.Model):
@@ -37,7 +37,7 @@ class Colegio(models.Model):
         ordering = ['nombre']
 
 class Curso(models.Model):
-    pais = models.ForeignKey(Pais)
+    colegio = models.ForeignKey(Colegio)
     nombre = models.CharField(max_length=100)
     def __unicode__(self):
         return u"%s" % (self.nombre)
@@ -45,6 +45,7 @@ class Curso(models.Model):
         ordering = ['nombre']
 
 class Seccion(models.Model):
+    curso = models.ForeignKey(Curso)
     nombre = models.CharField(max_length=100)
     def __unicode__(self):
         return u"%s" % (self.nombre)
@@ -53,6 +54,7 @@ class Seccion(models.Model):
         verbose_name_plural = 'Secciones'
 
 class Materia(models.Model):
+    curso = models.ForeignKey(Curso)
     nombre = models.CharField(max_length=100)
     def __unicode__(self):
         return u"%s" % (self.nombre)
@@ -66,13 +68,11 @@ class MateriaCurso(models.Model):
         return u"%s %s" % (self.curso.nombre, self.materia.nombre)
 
 class Horario(models.Model):
-    colegio = models.ForeignKey(Colegio)
-    curso = models.ForeignKey(Curso)
     seccion = models.ForeignKey(Seccion)
     desde = models.DateField()
     hasta = models.DateField()
     def __unicode__(self):
-        return u"%s %s %s" % (self.colegio.nombre, self.curso.nombre, self.seccion.nombre)
+        return u"%s %s%s (%s-%s)" % (self.seccion.curso.colegio.nombre, self.seccion.curso.nombre, self.seccion.nombre, self.desde.year, self.hasta.year)
     class Meta:
         ordering = ['-desde']
 
@@ -80,7 +80,8 @@ class HorarioDia(models.Model):
     horario = models.ForeignKey(Horario)
     dia = models.CharField(max_length=1, choices=DAYS_OF_WEEK)
     def __unicode__(self):
-        return u"%s %s" % (self.horario.curso.nombre, self.dia)
+        descDia=[ y for x, y in DAYS_OF_WEEK if int(x)  == int(self.dia)][0]
+        return u"%s: %s" % (self.horario, descDia)
     class Meta:
         ordering = ['dia']
 

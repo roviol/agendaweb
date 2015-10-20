@@ -28,6 +28,14 @@ class HorarioDiaInline(admin.TabularInline):
 class HorarioAdmin(admin.ModelAdmin):
     inlines = [HorarioDiaInline]
 
+
+class HorarioDetalleInline(admin.TabularInline):
+    model = HorarioDetalle
+    extra = 1
+
+class HorarioDiaAdmin(admin.ModelAdmin):
+    inlines = [HorarioDetalleInline]
+
 admin.site.register(Pais)
 admin.site.register(Ciudad, CiudadAdmin)
 admin.site.register(Curso)
@@ -35,5 +43,5 @@ admin.site.register(Seccion)
 admin.site.register(Materia)
 admin.site.register(MateriaCurso)
 admin.site.register(Horario,HorarioAdmin)
-admin.site.register(HorarioDia)
+admin.site.register(HorarioDia,HorarioDiaAdmin)
 admin.site.register(HorarioDetalle)
